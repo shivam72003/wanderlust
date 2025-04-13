@@ -26,7 +26,7 @@ const user = require("./models/user.js");
 //////sessions
 
 const store = mongoStoreSession({
-  mongoUrl: dburl,
+  mongoUrl: process.env.MONGOALTLAS,
   crypto: {
     secret: process.env.SECRET,
   },
