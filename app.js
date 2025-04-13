@@ -48,6 +48,11 @@ const store = MongoStore.create({
   touchAfter: 24 * 3600,
 });
 
+store.on("error",()=>{
+  console.log("error in store");
+  
+})
+
 sessionOptions = {
   store: store,
   secret: process.env.SECRET,
