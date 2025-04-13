@@ -33,9 +33,6 @@ const store = mongoStoreSession({
   touchAfter: 24 * 3600,
 });
 
-// store.on("error", () => {
-//   console.log(`error in session store`);
-// });
 
 sessionOptions = {
   store,
