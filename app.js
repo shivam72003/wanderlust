@@ -10,7 +10,7 @@ const methodOverride = require("method-override");
 const ejsMate = require("ejs-mate");
 const ExpressErr = require("./utils/ExpressErr.js");
 const expressSession = require("express-session");
-const mongoStoreSession = require("mongo-store");
+const MongoStore = require("connect-mongo");
 
 const listingRouter = require("./routes/listing.js");
 const reviewRouter = require("./routes/review.js");
@@ -24,18 +24,32 @@ const LocalStategy = require("passport-local");
 const user = require("./models/user.js");
 
 //////sessions
+const dburl = process.env.MONGOALTLAS;
 
-const store = mongoStoreSession({
-  mongoUrl: process.env.MONGOALTLAS,
+
+
+
+app.set("view engine", "ejs");
+app.set("views", path.join(__dirname, "views"));
+app.use(express.urlencoded({ extended: true }));
+app.use(methodOverride("_method"));
+app.use(express.static(path.join(__dirname, "/public")));
+app.engine("ejs", ejsMate);
+
+
+///////mongo
+
+
+const store = MongoStore.create({
+  mongoUrl: dburl,
   crypto: {
     secret: process.env.SECRET,
   },
   touchAfter: 24 * 3600,
 });
 
-
 sessionOptions = {
-  store,
+  store: store,
   secret: process.env.SECRET,
   resave: false,
   saveUninitailized: true,
@@ -45,16 +59,11 @@ sessionOptions = {
   },
 };
 
-///////mongo
+app.use(session(sessionOptions));
+app.use(flash());
 
-app.set("view engine", "ejs");
-app.set("views", path.join(__dirname, "views"));
-app.use(express.urlencoded({ extended: true }));
-app.use(methodOverride("_method"));
-app.use(express.static(path.join(__dirname, "/public")));
-app.engine("ejs", ejsMate);
 
-const dburl = process.env.MONGOALTLAS;
+
 
 main()
   .then(() => {
@@ -67,9 +76,6 @@ main()
 async function main() {
   await mongoose.connect(dburl);
 }
-
-app.use(session(sessionOptions));
-app.use(flash());
 
 app.use(passport.initialize());
 app.use(passport.session());
