@@ -34,7 +34,7 @@ const store = mongoStoreSession({
 });
 
 store.on("error", () => {
-  console.log(`error in session store ${err}`);
+  console.log(`error in session store`);
 });
 
 sessionOptions = {
